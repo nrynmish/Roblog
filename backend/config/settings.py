@@ -10,8 +10,7 @@ class Settings(BaseSettings):
     MAX_NEW_TOKENS: int = 1500
     TEMPERATURE: float = 0.7
     TOP_P: float = 0.9
-    DEVICE: str = "cuda"  # Change to "cuda" if GPU available
-
+    DEVICE: str = "cpu"
     
     APP_ENV: str = "development"
     DEBUG: bool = True
