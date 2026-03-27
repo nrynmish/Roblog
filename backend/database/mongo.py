@@ -5,7 +5,7 @@ from bson import ObjectId
 from pymongo import MongoClient, DESCENDING
 from pymongo.collection import Collection
 from pymongo.errors import ConnectionFailure, OperationFailure
-
+import certifi
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -24,9 +24,9 @@ class MongoDB:
             logger.info("Connecting to MongoDB...")
 
             self.client = MongoClient(
-                settings.MONGO_URI,
-                serverSelectionTimeoutMS=5000,  
-                connectTimeoutMS=5000
+            settings.MONGO_URI,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=5000
             )
 
             
