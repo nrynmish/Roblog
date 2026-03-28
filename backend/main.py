@@ -16,34 +16,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-# ------------------------------------------------------------------
-# Lifespan — startup & shutdown events
-# ------------------------------------------------------------------
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # ── Startup ──────────────────────────────────────────────────
-    logger.info("🚀 Starting SEO Blog Engine...")
 
-    # Connect to MongoDB
+    logger.info("Starting SEO Blog Engine...")
+
     connect_db()
-    logger.info("✅ MongoDB connected")
+    logger.info("MongoDB connected")
 
-    # Load Mistral model (blocking — intentional at startup)
-    logger.info("⏳ Loading Mistral model (this may take a few minutes)...")
+    logger.info("Loading Mistral model (this may take a few minutes)...")
     model_service.load_model()
 
     yield  # App is running
 
-    # ── Shutdown ─────────────────────────────────────────────────
     logger.info("Shutting down...")
     disconnect_db()
 
-
-# ------------------------------------------------------------------
-# App initialization
-# ------------------------------------------------------------------
 
 app = FastAPI(
     title="SEO Blog Generation Engine",
@@ -64,10 +52,6 @@ app.add_middleware(
 # Register routers
 app.include_router(blog.router, prefix="/api/v1", tags=["Blog"])
 
-
-# ------------------------------------------------------------------
-# Health check
-# ------------------------------------------------------------------
 
 @app.get("/health")
 def health_check():
