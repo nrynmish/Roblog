@@ -107,7 +107,7 @@ Write 1 paragraph.
 
 Use "{keyword}" naturally throughout. Minimum 600 words. Start directly with the # title. [/INST]"""
 
-        logger.info(f"✅ Prompt built for keyword: {keyword}")
+        logger.info(f"Prompt built for keyword: {keyword}")
         return prompt
 
 

@@ -28,7 +28,7 @@ class TextParser:
             "content": content
         }
 
-        logger.info(f"✅ Parsed blog — title: '{title[:50]}...'")
+        logger.info(f"Parsed blog — title: '{title[:50]}...'")
         return result
 
     def _clean_text(self, text: str) -> str:

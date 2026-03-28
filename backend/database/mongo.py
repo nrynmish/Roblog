@@ -38,14 +38,14 @@ class MongoDB:
             self._create_indexes()
 
             self.is_connected = True
-            logger.info(f"✅ MongoDB connected — DB: {settings.MONGO_DB_NAME}")
+            logger.info(f"MongoDB connected — DB: {settings.MONGO_DB_NAME}")
 
         except ConnectionFailure as e:
-            logger.error(f"❌ MongoDB connection failed: {str(e)}")
+            logger.error(f"MongoDB connection failed: {str(e)}")
             raise RuntimeError(f"MongoDB connection failed: {str(e)}")
 
         except Exception as e:
-            logger.error(f"❌ Unexpected DB error: {str(e)}")
+            logger.error(f"Unexpected DB error: {str(e)}")
             raise RuntimeError(f"Database error: {str(e)}")
 
     def disconnect(self):
@@ -72,11 +72,11 @@ class MongoDB:
             result = self.blogs.insert_one(blog_data)
             inserted_id = str(result.inserted_id)
 
-            logger.info(f"✅ Blog inserted — ID: {inserted_id}")
+            logger.info(f"Blog inserted — ID: {inserted_id}")
             return inserted_id
 
         except Exception as e:
-            logger.error(f"❌ Insert failed: {str(e)}")
+            logger.error(f"Insert failed: {str(e)}")
             raise RuntimeError(f"Failed to insert blog: {str(e)}")
 
     def get_blog_by_id(self, blog_id: str) -> dict | None:
@@ -169,11 +169,11 @@ class MongoDB:
                 doc["_id"] = str(doc["_id"])
                 blogs.append(doc)
 
-            logger.info(f"✅ Found {len(blogs)} blogs for keyword: {keyword}")
+            logger.info(f"Found {len(blogs)} blogs for keyword: {keyword}")
             return blogs
 
         except Exception as e:
-            logger.error(f"❌ Keyword search failed: {str(e)}")
+            logger.error(f"Keyword search failed: {str(e)}")
             raise RuntimeError(f"Failed to search blogs: {str(e)}")
 
     def delete_blog(self, blog_id: str) -> bool:
@@ -187,14 +187,14 @@ class MongoDB:
             result = self.blogs.delete_one({"_id": ObjectId(blog_id)})
 
             if result.deleted_count > 0:
-                logger.info(f"✅ Blog deleted — ID: {blog_id}")
+                logger.info(f"Blog deleted — ID: {blog_id}")
                 return True
 
             logger.warning(f"Blog not found for deletion — ID: {blog_id}")
             return False
 
         except Exception as e:
-            logger.error(f"❌ Delete failed: {str(e)}")
+            logger.error(f"Delete failed: {str(e)}")
             raise RuntimeError(f"Failed to delete blog: {str(e)}")
 
 

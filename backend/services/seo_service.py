@@ -56,11 +56,11 @@ class SEOService:
                 "seo_score":         seo_score,
             }
 
-            logger.info(f"✅ SEO analysis complete — score: {seo_score}")
+            logger.info(f"SEO analysis complete — score: {seo_score}")
             return result
 
         except Exception as e:
-            logger.error(f"❌ SEO analysis failed: {str(e)}")
+            logger.error(f"SEO analysis failed: {str(e)}")
             raise RuntimeError(f"SEO analysis failed: {str(e)}")
 
     # ------------------------------------------------------------------
