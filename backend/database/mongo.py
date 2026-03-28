@@ -58,7 +58,7 @@ class MongoDB:
         self.blogs.create_index("keyword")
         self.blogs.create_index("created_at")
         self.blogs.create_index([("created_at", DESCENDING)])
-        logger.info("✅ MongoDB indexes created")
+        logger.info("MongoDB indexes created")
 
     def insert_blog(self, blog_data: dict) -> str:
  

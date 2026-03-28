@@ -1,5 +1,3 @@
-# main.py
-
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -16,22 +14,21 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
     logger.info("Starting SEO Blog Engine...")
 
     connect_db()
     logger.info("MongoDB connected")
 
+
     logger.info("Loading Mistral model (this may take a few minutes)...")
     model_service.load_model()
 
     yield  # App is running
-
     logger.info("Shutting down...")
     disconnect_db()
-
 
 app = FastAPI(
     title="SEO Blog Generation Engine",
@@ -40,7 +37,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS — allow Next.js frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -48,9 +44,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Register routers
 app.include_router(blog.router, prefix="/api/v1", tags=["Blog"])
+
 
 
 @app.get("/health")
