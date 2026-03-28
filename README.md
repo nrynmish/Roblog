@@ -1,3 +1,5 @@
+# Roblog
+
 Roblog is a full-stack AI application that converts a keyword into a fully SEO-optimized blog post. It uses a local LLM (TinyLlama/Mistral) for content generation, calculates SEO metrics, stores results in MongoDB Atlas, and exposes a clean REST API for frontend consumption.
 
 ---
@@ -15,6 +17,7 @@ Roblog is a full-stack AI application that converts a keyword into a fully SEO-o
 ---
 
 ## How It Works
+
 ```
 User enters keyword
       ↓
@@ -34,8 +37,10 @@ JSON response returned to frontend
 ---
 
 ## Project Structure
+
 ```
 Roblog/
+├── requirements.txt             # Python dependencies
 ├── backend/
 │   ├── main.py                  # FastAPI entry point
 │   ├── config/
@@ -55,7 +60,6 @@ Roblog/
 │   ├── utils/
 │   │   ├── prompt_builder.py    # LLM prompt templates
 │   │   └── text_parser.py       # Parse raw LLM output
-│   ├── requirements.txt
 │   ├── Dockerfile
 │   └── .env.example
 └── frontend/                    # Next.js app (coming soon)
@@ -79,7 +83,7 @@ Roblog/
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/nrynmish/Roblog.git
-cd Roblog/backend
+cd Roblog
 ```
 
 ### 2. Create and activate virtual environment
@@ -96,8 +100,8 @@ pip install -r requirements.txt
 
 ### 4. Set up environment variables
 ```bash
-cp .env.example .env
-nano .env
+cp backend/.env.example backend/.env
+nano backend/.env
 ```
 
 Fill in your values:
@@ -132,7 +136,7 @@ Paste your token from [huggingface.co/settings/tokens](https://huggingface.co/se
 ### 7. Run the backend
 ```bash
 # Force CPU (recommended for most machines)
-CUDA_VISIBLE_DEVICES="" uvicorn main:app --reload --host 0.0.0.0 --port 8000
+CUDA_VISIBLE_DEVICES="" uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The first run will download the model automatically (~2GB for TinyLlama).
@@ -209,7 +213,7 @@ curl -X POST http://localhost:8000/api/v1/generate-blog \
 | Mistral 7B GGUF (4-bit) | 4GB | 6GB | Excellent | Production demos |
 | Mistral 7B Full | 14GB | 28GB | Best | GPU machines only |
 
-To switch models update `MODEL_NAME` in your `.env` file.
+To switch models, update `MODEL_NAME` in your `.env` file.
 
 ---
 
@@ -220,7 +224,7 @@ Go to MongoDB Atlas → Network Access → Add `0.0.0.0/0`
 
 **CUDA out of memory:**
 ```bash
-CUDA_VISIBLE_DEVICES="" uvicorn main:app --reload --host 0.0.0.0 --port 8000
+CUDA_VISIBLE_DEVICES="" uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Model returns empty output:**
@@ -228,7 +232,7 @@ The prompt format differs between models. TinyLlama uses chat format, Mistral us
 
 **venv not active:**
 ```bash
-source /path/to/Roblog/backend/venv/bin/activate
+source /path/to/Roblog/venv/bin/activate
 ```
 
 ---
@@ -242,4 +246,3 @@ Built for a hackathon by team Roblog.
 ## License
 
 MIT
-EOF
