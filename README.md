@@ -41,8 +41,12 @@ JSON response returned to frontend
 ```
 Roblog/
 ├── requirements.txt             # Python dependencies
+├── docker-compose.yml           # Spins up frontend + backend together
+├── .gitignore
 ├── backend/
 │   ├── main.py                  # FastAPI entry point
+│   ├── Dockerfile
+│   ├── .env.example
 │   ├── config/
 │   │   └── settings.py          # App configuration
 │   ├── routers/
@@ -57,28 +61,41 @@ Roblog/
 │   │   └── blog_model.py        # MongoDB document schema
 │   ├── schemas/
 │   │   └── blog_schema.py       # Pydantic request/response models
-│   ├── utils/
-│   │   ├── prompt_builder.py    # LLM prompt templates
-│   │   └── text_parser.py       # Parse raw LLM output
-│   ├── Dockerfile
-│   └── .env.example
-└── frontend/                    # Next.js app (coming soon)
+│   └── utils/
+│       ├── prompt_builder.py    # LLM prompt templates
+│       └── text_parser.py       # Parse raw LLM output
+└── frontend/
+    ├── Dockerfile
+    ├── next.config.js
+    ├── tailwind.config.js
+    ├── postcss.config.js
+    ├── tsconfig.json
+    ├── package.json
+    ├── .env.local.example
+    └── src/
+        ├── app/
+        │   ├── layout.tsx
+        │   ├── page.tsx         # Main dashboard page
+        │   └── globals.css
+        ├── components/
+        │   ├── dashboard/
+        │   │   ├── BlogCard.tsx         # Blog list item
+        │   │   ├── BlogDetail.tsx       # Slide-in detail panel
+        │   │   ├── GeneratePanel.tsx    # Keyword input + generate
+        │   │   ├── MetricsSummary.tsx   # Aggregate stats tiles
+        │   │   └── SeoChart.tsx         # Score history bar chart
+        │   └── ui/
+        │       ├── ScoreRing.tsx        # Animated SVG score ring
+        │       └── StatBar.tsx          # Metric progress bar
+        ├── hooks/
+        │   └── useBlogs.ts      # useBlogs and useGenerate hooks
+        └── lib/
+            └── api.ts           # Typed API client
 ```
 
 ---
 
-## Prerequisites
-
-- Python 3.10+
-- Node.js 18+ (for frontend)
-- MongoDB Atlas account (free tier works)
-- HuggingFace account (free)
-- 8GB+ RAM recommended
-- Internet connection for first model download
-
----
-
-## Backend Setup
+## Running with Docker (recommended)
 
 ### 1. Clone the repository
 ```bash
@@ -86,19 +103,7 @@ git clone https://github.com/nrynmish/Roblog.git
 cd Roblog
 ```
 
-### 2. Create and activate virtual environment
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. Set up environment variables
+### 2. Set up environment variables
 ```bash
 cp backend/.env.example backend/.env
 nano backend/.env
@@ -117,7 +122,7 @@ APP_ENV=development
 DEBUG=True
 ```
 
-### 5. Set up MongoDB Atlas
+### 3. Set up MongoDB Atlas
 
 1. Go to [cloud.mongodb.com](https://cloud.mongodb.com) and create a free account
 2. Create a free M0 cluster
@@ -125,7 +130,46 @@ DEBUG=True
 4. Go to **Network Access** and add `0.0.0.0/0` to allow all IPs
 5. Click **Connect** on your cluster and copy the connection string into your `.env`
 
-### 6. Set up HuggingFace
+### 4. Build and run
+```bash
+docker compose up --build
+```
+
+Then open:
+- Frontend: `http://localhost:3000`
+- Backend API docs: `http://localhost:8000/docs`
+
+The first run will download the model automatically (~2GB for TinyLlama). Subsequent runs are fast thanks to the cached Docker volume.
+
+---
+
+## Running Locally (without Docker)
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- MongoDB Atlas account (free tier works)
+- HuggingFace account (free)
+- 8GB+ RAM recommended
+
+### Backend
+```bash
+# From project root
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Set up env
+cp backend/.env.example backend/.env
+nano backend/.env
+
+# Run
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### HuggingFace login (first time only)
 ```bash
 pip install huggingface_hub
 huggingface-cli login
@@ -133,21 +177,16 @@ huggingface-cli login
 
 Paste your token from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 
-### 7. Run the backend
+### Frontend
 ```bash
-# Force CPU (recommended for most machines)
-CUDA_VISIBLE_DEVICES="" uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+# In a new terminal, from project root
+cd frontend
+cp .env.local.example .env.local
+npm install
+npm run dev
 ```
 
-The first run will download the model automatically (~2GB for TinyLlama).
-
-### 8. Verify it is running
-
-Open your browser and go to:
-```
-http://localhost:8000/health
-http://localhost:8000/docs
-```
+Then open `http://localhost:3000`.
 
 ---
 
@@ -213,7 +252,7 @@ curl -X POST http://localhost:8000/api/v1/generate-blog \
 | Mistral 7B GGUF (4-bit) | 4GB | 6GB | Excellent | Production demos |
 | Mistral 7B Full | 14GB | 28GB | Best | GPU machines only |
 
-To switch models, update `MODEL_NAME` in your `.env` file.
+To switch models, update `MODEL_NAME` in your `backend/.env` file.
 
 ---
 
@@ -223,17 +262,16 @@ To switch models, update `MODEL_NAME` in your `.env` file.
 Go to MongoDB Atlas → Network Access → Add `0.0.0.0/0`
 
 **CUDA out of memory:**
+Set `DEVICE=cpu` in your `.env` file, or run with:
 ```bash
-CUDA_VISIBLE_DEVICES="" uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+CUDA_VISIBLE_DEVICES="" uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Model returns empty output:**
 The prompt format differs between models. TinyLlama uses chat format, Mistral uses `[INST]` format. Both are handled automatically in `prompt_builder.py`.
 
-**venv not active:**
-```bash
-source /path/to/Roblog/venv/bin/activate
-```
+**Docker build fails on `networkx`:**
+Ensure the backend Dockerfile uses `python:3.11-slim` or later — `networkx==3.6.1` requires Python 3.11+.
 
 ---
 
