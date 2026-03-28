@@ -1,7 +1,5 @@
 venv/
 .env
-# Python
-venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -10,25 +8,18 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+digest.txt
 
-# Environment
-.env
-*.env
-
-# Model cache (huge files, don't commit)
 ~/.cache/huggingface/
 *.bin
 *.safetensors
 
-# Node
 node_modules/
 .next/
 npm-debug.log
 
-# IDE
 .vscode/
 .idea/
 
-# OS
 .DS_Store
 Thumbs.db

@@ -50,7 +50,7 @@ class ModelService:
 
                 self.model = AutoModelForCausalLM.from_pretrained(
                     settings.MODEL_NAME,
-                    dtype=torch.float32,
+                    torch_dtype=torch.float32,
                     low_cpu_mem_usage=True,
                     trust_remote_code=True
                 )
